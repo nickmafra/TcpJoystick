@@ -61,6 +61,8 @@ public class ScreenJoystickLayout {
         for (JoyButton joyButton : joyLayout.getButtons()) {
             addButton(joyButton);
         }
+
+        mainActivity.getMenuLayout().bringToFront();
     }
 
     public int getSpaceUnit() {

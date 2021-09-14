@@ -1,0 +1,40 @@
+{
+  "name": "race",
+  "buttons": [
+    {
+      "index": "5",
+      "format": "round",
+      "text": "ST",
+      "position": {
+        "base": "center",
+        "x": 0,
+        "y": -0.2
+      },
+      "size": 0.25
+    },
+    {
+      "index": "1",
+      "format": "rectangle",
+      "text": "B1",
+      "position": {
+        "base": "left",
+        "x": 0.4,
+        "y": 0.4
+      },
+      "width": 0.8,
+      "height": 0.8
+    },
+    {
+      "index": "2",
+      "format": "rectangle",
+      "text": "B2",
+      "position": {
+        "base": "right",
+        "x": -0.4,
+        "y": 0.4
+      },
+      "width": 0.8,
+      "height": 0.8
+    }
+  ]
+}

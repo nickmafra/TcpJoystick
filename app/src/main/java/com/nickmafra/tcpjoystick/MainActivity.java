@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,14 +14,26 @@ import com.nickmafra.tcpjoystick.layout.JoyLayout;
 import com.nickmafra.tcpjoystick.layout.Parser;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private RelativeLayout layout;
+    @Getter
+    private LinearLayout menuLayout;
+
     private Parser parser;
     private ScreenJoystickLayout screenJoystickLayout;
     private JoyClient joyClient;
+    private static final int[] defaultLayouts = {
+            R.raw.default_joylayout,
+            R.raw.race_joylayout
+    };
+    private final List<JoyLayout> layouts = new ArrayList<>();
+
     @Getter
     public int joyIndex = 1; // TODO
 
@@ -36,11 +49,19 @@ public class MainActivity extends AppCompatActivity {
         layout = findViewById(R.id.main_layout);
 
         parser = new Parser();
-        JoyLayout joyLayout = parser.loadDefault(this);
+        loadDefaultLayouts();
+
+        menuLayout = findViewById(R.id.menu_layout);
 
         screenJoystickLayout = new ScreenJoystickLayout(this);
-        screenJoystickLayout.joyLayout = joyLayout;
+        screenJoystickLayout.joyLayout = layouts.get(1);
         screenJoystickLayout.load();
+    }
+
+    private void loadDefaultLayouts() {
+        for (int rawFile : defaultLayouts) {
+            layouts.add(parser.load(getResources().openRawResource(rawFile)));
+        }
     }
 
     @Override

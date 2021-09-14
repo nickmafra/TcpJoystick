@@ -1,4 +1,5 @@
 {
+  "name": "sample",
   "buttons": [
     {
       "type": "axis",
@@ -11,7 +12,7 @@
       "size": 0.6
     },
     {
-      "index": "9",
+      "index": "5",
       "format": "rectangle",
       "text": "ST",
       "position": {
