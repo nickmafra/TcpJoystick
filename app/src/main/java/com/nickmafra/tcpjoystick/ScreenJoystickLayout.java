@@ -28,7 +28,9 @@ public class ScreenJoystickLayout implements View.OnTouchListener, JoyAxisView.L
 
     private String pressPattern = "{\"B\":{\"Index\":${buttonIndex},\"Mode\":\"p\",\"JNo\":${joyIndex}}}";
     private String releasePattern = "{\"B\":{\"Index\":${buttonIndex},\"Mode\":\"r\",\"JNo\":${joyIndex}}}";
-    private String axisPattern = "{\"${buttonIndex}\":{\"Direction\":\"${direction}\",\"Value\":${value},\"JNo\":${joyIndex}}}";
+
+    private String axisPrePattern = "{\"${buttonIndex}\":{\"Direction\":\"${direction}\",\"Value\":";
+    private String axisPosPattern = ",\"JNo\":${joyIndex}}}";
 
     public ScreenJoystickLayout(MainActivity activity) {
         this.activity = activity;
@@ -74,9 +76,10 @@ public class ScreenJoystickLayout implements View.OnTouchListener, JoyAxisView.L
             joyButton.setType("button");
         switch (joyButton.getType()) {
             case "axis":
-                JoyAxisView axisView = new JoyAxisView(activity);
+                JoyAxisView axisView = new JoyAxisView(activity, 100);
                 axisView.setListener(this);
                 AxisButtonData axisData = new AxisButtonData(1, "A");
+                axisData.setPrePosAxisData(axisPrePattern, axisPosPattern);
                 view = axisView;
                 map.put(view, axisData);
                 break;
@@ -87,8 +90,7 @@ public class ScreenJoystickLayout implements View.OnTouchListener, JoyAxisView.L
                 textView.setText(joyButton.getText());
                 textView.setBackground(ContextCompat.getDrawable(activity, R.drawable.round_button));
                 ButtonData data = new ButtonData(activity.joyIndex, joyButton.getIndex());
-                data.pressData = data.applyPattern(pressPattern).getBytes();
-                data.releaseData = data.applyPattern(releasePattern).getBytes();
+                data.setPressReleaseData(pressPattern, releasePattern);
                 textView.setOnTouchListener(this);
                 view = textView;
                 map.put(view, data);
@@ -158,8 +160,8 @@ public class ScreenJoystickLayout implements View.OnTouchListener, JoyAxisView.L
         }
         AxisButtonData data = (AxisButtonData) buttonData;
 
-        sendCommand(data.applyPattern(axisPattern, "X", axisValueToPositiveInt(relX, 1000)).getBytes());
-        sendCommand(data.applyPattern(axisPattern, "Y", axisValueToPositiveInt(relY, 1000)).getBytes());
+        sendCommand(data.getBytesX(axisValueToPositiveInt(relX, 1000)));
+        sendCommand(data.getBytesY(axisValueToPositiveInt(relY, 1000)));
     }
 
     private int axisValueToPositiveInt(double real, int max) {

@@ -84,18 +84,20 @@ public class JoyClient extends Thread {
 
     private boolean sendCommandIfNeeded() {
         if (socket == null || !socket.isConnected() || socket.isClosed()) {
+            commands.clear();
             return false;
         }
-        byte[] command = commands.poll();
-        if (command == null) {
-            return false;
+        boolean any = false;
+        byte[] command;
+        while ((command = commands.poll()) != null) {
+            any = true;
+            try {
+                socket.getOutputStream().write(command);
+            } catch (IOException e) {
+                logError(new RuntimeException("Error during command sending.", e));
+            }
         }
-        try {
-            socket.getOutputStream().write(command);
-        } catch (IOException e) {
-            logError(new RuntimeException("Error during command sending.", e));
-        }
-        return true;
+        return any;
     }
 
     private boolean doSomething() {

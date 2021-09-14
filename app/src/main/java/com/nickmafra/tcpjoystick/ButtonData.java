@@ -18,4 +18,9 @@ public class ButtonData {
                 .replace("${joyIndex}", String.valueOf(joyIndex))
                 .replace("${buttonIndex}", buttonIndex);
     }
+
+    public void setPressReleaseData(String pressPattern, String releasePattern) {
+        pressData = applyPattern(pressPattern).getBytes();
+        releaseData = applyPattern(releasePattern).getBytes();
+    }
 }

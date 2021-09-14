@@ -5,14 +5,19 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import lombok.Setter;
 
-public class JoyAxisView extends View {
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+public class JoyAxisView extends View implements Runnable {
 
     private static final String TAG = JoyAxisView.class.getSimpleName();
+
+    private static final int INITIAL_DELAY = 1000;
+    private static final int DEFAULT_MAX_SEND_DELAY = 200;
 
     @Setter
     private Paint circlePaint;
@@ -24,6 +29,7 @@ public class JoyAxisView extends View {
     @Setter
     private volatile float deadZonePercent = 0.1F;
 
+    private final JoyAxisView THIS;
     private float circleRadius;
     private float buttonRadius;
     private int centerX;
@@ -31,9 +37,21 @@ public class JoyAxisView extends View {
     private int positionX;
     private int positionY;
 
-    public JoyAxisView(Context context) {
+    private volatile double relX;
+    private volatile double relY;
+    private volatile double lastRelX;
+    private volatile double lastRelY;
+
+    private final int maxSendDelay;
+    private long lastSend;
+
+    public JoyAxisView(Context context, int delay) {
         super(context);
         setDefaultPaints();
+        Executors.newSingleThreadScheduledExecutor()
+                .scheduleAtFixedRate(this, INITIAL_DELAY, delay, TimeUnit.MILLISECONDS);
+        THIS = this;
+        maxSendDelay = Math.min(delay, DEFAULT_MAX_SEND_DELAY);
     }
 
     public void setDefaultPaints() {
@@ -75,7 +93,6 @@ public class JoyAxisView extends View {
         } else {
             positionX = (int) event.getX();
             positionY = (int) event.getY();
-            Log.d(TAG, "onTouchEvent: real [" + positionX + "," + positionY + "]");
         }
 
         int dx = positionX - centerX;
@@ -89,10 +106,7 @@ public class JoyAxisView extends View {
             positionX = centerX + dx;
             positionY = centerY + dy;
         }
-        // normalized values (up to 1)
         double relAbs = abs / circleRadius;
-        double relX;
-        double relY;
         if (relAbs <= deadZonePercent) {
             relX = 0;
             relY = 0;
@@ -101,15 +115,24 @@ public class JoyAxisView extends View {
             relY = dy / circleRadius;
         }
 
-        Log.d(TAG, "onTouchEvent: normalized [" + relX + "," + relY + "]");
-
-        if (listener != null)
-            listener.onAxisChanged(this, relX, relY);
         invalidate(); // redraw
         return true;
     }
 
     public interface Listener {
         void onAxisChanged(View view, double relX, double relY);
+    }
+
+    @Override
+    public void run() {
+        long time = System.currentTimeMillis();
+        long diff = time - lastSend;
+        if ((relX != lastRelX || relY != lastRelY || diff > maxSendDelay)) {
+            lastSend = time;
+            lastRelX = relX;
+            lastRelY = relY;
+            if (listener != null)
+                listener.onAxisChanged(THIS, relX, relY);
+        }
     }
 }
