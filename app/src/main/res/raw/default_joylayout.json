@@ -1,0 +1,76 @@
+{
+  "buttons": [
+    {
+      "index": 5,
+      "text": "↓",
+      "position": {
+        "x": 0.5,
+        "y": 0.25
+      },
+      "size": 0.25
+    },
+    {
+      "index": 6,
+      "text": "←",
+      "position": {
+        "x": 0.25,
+        "y": 0.5
+      },
+      "size": 0.25
+    },
+    {
+      "index": 7,
+      "text": "↑",
+      "position": {
+        "x": 0.5,
+        "y": 0.75
+      },
+      "size": 0.25
+    },
+    {
+      "index": 8,
+      "text": "→",
+      "position": {
+        "x": 0.75,
+        "y": 0.5
+      },
+      "size": 0.25
+    },
+    {
+      "index": 1,
+      "text": "B1",
+      "position": {
+        "x": -0.5,
+        "y": 0.25
+      },
+      "size": 0.25
+    },
+    {
+      "index": 2,
+      "text": "B2",
+      "position": {
+        "x": -0.25,
+        "y": 0.5
+      },
+      "size": 0.25
+    },
+    {
+      "index": 3,
+      "text": "B3",
+      "position": {
+        "x": -0.5,
+        "y": 0.75
+      },
+      "size": 0.25
+    },
+    {
+      "index": 4,
+      "text": "B4",
+      "position": {
+        "x": -0.75,
+        "y": 0.5
+      },
+      "size": 0.25
+    }
+  ]
+}

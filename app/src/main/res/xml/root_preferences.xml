@@ -1,0 +1,36 @@
+<PreferenceScreen
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+            app:title="@string/server_header">
+
+        <EditTextPreference
+                app:key="ip"
+                app:title="IP"
+                app:useSimpleSummaryProvider="true"/>
+
+        <EditTextPreference
+                app:key="port"
+                app:title="@string/port"
+                app:useSimpleSummaryProvider="true"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            app:title="@string/fast_change_header">
+
+        <SwitchPreferenceCompat
+                app:key="fast_change"
+                app:title="@string/fast_change_title"/>
+
+        <ListPreference
+                app:key="secondary_layout"
+                app:title="@string/secondary_layout_title"
+                app:entries="@array/secondary_layout_entries"
+                app:entryValues="@array/secondary_layout_values"
+                app:defaultValue="null"
+                app:useSimpleSummaryProvider="true"
+                app:dependency="fast_change"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">TcpJoystick</string>
+    <string name="button_text">Settings</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <string name="server_header">Server</string>
+    <string name="port">Port</string>
+
+    <string name="fast_change_title">Fast change between layouts</string>
+    <string name="fast_change_header">Fast Change</string>
+    <string name="secondary_layout_title">Secondary Layout</string>
+    <string name="connect_text">Connect</string>
+</resources>
