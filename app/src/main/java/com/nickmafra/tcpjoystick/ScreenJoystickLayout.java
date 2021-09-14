@@ -1,44 +1,54 @@
 package com.nickmafra.tcpjoystick;
 
-import android.annotation.SuppressLint;
 import android.graphics.Insets;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.*;
+import android.view.WindowInsets;
+import android.view.WindowMetrics;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import androidx.core.content.ContextCompat;
 import com.nickmafra.tcpjoystick.layout.JoyButton;
-import com.nickmafra.tcpjoystick.layout.JoyLayout;
 import com.nickmafra.tcpjoystick.layout.JoyButtonPosition;
+import com.nickmafra.tcpjoystick.layout.JoyLayout;
+import lombok.Getter;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ScreenJoystickLayout implements View.OnTouchListener {
+public class ScreenJoystickLayout {
 
     private static final String TAG = ScreenJoystickLayout.class.getSimpleName();
 
-    private final MainActivity activity;
+    @Getter
+    private final MainActivity mainActivity;
     private final int unit;
     public JoyLayout joyLayout;
 
-    private Map<View, ButtonData> map = new HashMap<>();
+    private List<JoyItemView> viewItems = new ArrayList<>();
 
-    private String pressPattern = "{\"B\":{\"Index\":${buttonIndex},\"Mode\":\"p\",\"JNo\":${joyIndex}}}";
-    private String releasePattern = "{\"B\":{\"Index\":${buttonIndex},\"Mode\":\"r\",\"JNo\":${joyIndex}}}";
-
-    public ScreenJoystickLayout(MainActivity activity) {
-        this.activity = activity;
+    public ScreenJoystickLayout(MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
         this.unit = getSpaceUnit();
     }
 
-    public void clear() {
-        for (Map.Entry<View, ButtonData> entries : map.entrySet()) {
-            activity.getLayout().removeView(entries.getKey());
+    protected void onResume() {
+        for (JoyItemView joyItemView : viewItems) {
+            joyItemView.onResume();
         }
-        map.clear();
+    }
+
+    protected void onPause() {
+        for (JoyItemView joyItemView : viewItems) {
+            joyItemView.onPause();
+        }
+    }
+
+    public void clear() {
+        for (JoyItemView joyItemView : viewItems) {
+            joyItemView.onPause();
+            mainActivity.getLayout().removeView(joyItemView.asView());
+        }
+        viewItems.clear();
     }
 
     public void load() {
@@ -55,35 +65,50 @@ public class ScreenJoystickLayout implements View.OnTouchListener {
 
     public int getSpaceUnit() {
         Log.d(TAG, "getSpaceUnit: SDK version=" + Build.VERSION.SDK_INT);
+        int spaceUnit;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            WindowMetrics windowMetrics = activity.getWindowManager().getCurrentWindowMetrics();
+            WindowMetrics windowMetrics = mainActivity.getWindowManager().getCurrentWindowMetrics();
             Insets insets = windowMetrics.getWindowInsets()
                     .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
-            return windowMetrics.getBounds().height() - insets.top - insets.bottom;
+            spaceUnit = Math.min(
+                    windowMetrics.getBounds().width() - insets.left - insets.right,
+                    windowMetrics.getBounds().height() - insets.top - insets.bottom
+            );
         } else {
             DisplayMetrics displayMetrics = new DisplayMetrics();
-            activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-            return displayMetrics.heightPixels;
+            mainActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            spaceUnit = Math.min(displayMetrics.widthPixels, displayMetrics.heightPixels);
         }
+        Log.i(TAG, "getSpaceUnit: " + spaceUnit);
+        return spaceUnit;
     }
 
     public void addButton(JoyButton joyButton) {
-        TextView view = new TextView(activity);
-        view.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-        view.setText(joyButton.getText());
-        view.setBackground(ContextCompat.getDrawable(activity, R.drawable.round_button));
-        ButtonData data = new ButtonData(activity.joyIndex, joyButton.getIndex());
-        data.pressData = data.applyPattern(pressPattern).getBytes();
-        data.releaseData = data.applyPattern(releasePattern).getBytes();
-        map.put(view, data);
-        view.setOnTouchListener(this);
+        JoyItemView joyItemView;
+        if (joyButton.getType() == null)
+            joyButton.setType("button");
+        switch (joyButton.getType()) {
+            case "axis":
+                JoyAxisView axisView = new JoyAxisView(mainActivity, 100);
+                axisView.config(joyButton);
+                joyItemView = axisView;
+                break;
+            case "button":
+            default:
+                JoyButtonView buttonView = new JoyButtonView(mainActivity);
+                buttonView.config(joyButton);
+                joyItemView = buttonView;
+                break;
+        }
+        viewItems.add(joyItemView);
 
-        Log.d(TAG, "addButton: unit=" + unit);
         int size = (int) (joyButton.getSize() * unit);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(size, size);
         JoyButtonPosition position = joyButton.getPosition();
         int center = size / 2;
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        if (position.getBase() == null)
+            position.setBase("center");
         switch (position.getBase()) {
             case "left":
                 layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
@@ -102,32 +127,6 @@ public class ScreenJoystickLayout implements View.OnTouchListener {
                 layoutParams.bottomMargin = (int) (position.getY() * unit) - center + unit / 2;
                 break;
         }
-        activity.getLayout().addView(view, layoutParams);
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        ButtonData data = map.get(v);
-        if (data == null) {
-            return false;
-        }
-
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                sendCommand(data.pressData);
-                return true;
-            case MotionEvent.ACTION_UP:
-                sendCommand(data.releaseData);
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    private void sendCommand(byte[] command) {
-        if (command != null) {
-            activity.joyClient.addCommand(command);
-        }
+        mainActivity.getLayout().addView(joyItemView.asView(), layoutParams);
     }
 }

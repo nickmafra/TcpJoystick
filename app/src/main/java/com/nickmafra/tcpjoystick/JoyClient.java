@@ -54,6 +54,11 @@ public class JoyClient extends Thread {
         }
     }
 
+    private void end() {
+        closeSocket();
+        interrupt();
+    }
+
     private void reconnect() {
         closeSocket();
         if (socketAddress == null) {
@@ -84,18 +89,20 @@ public class JoyClient extends Thread {
 
     private boolean sendCommandIfNeeded() {
         if (socket == null || !socket.isConnected() || socket.isClosed()) {
+            commands.clear();
             return false;
         }
-        byte[] command = commands.poll();
-        if (command == null) {
-            return false;
+        boolean any = false;
+        byte[] command;
+        while ((command = commands.poll()) != null) {
+            any = true;
+            try {
+                socket.getOutputStream().write(command);
+            } catch (IOException e) {
+                logError(new RuntimeException("Error during command sending.", e));
+            }
         }
-        try {
-            socket.getOutputStream().write(command);
-        } catch (IOException e) {
-            logError(new RuntimeException("Error during command sending.", e));
-        }
-        return true;
+        return any;
     }
 
     private boolean doSomething() {
@@ -116,10 +123,11 @@ public class JoyClient extends Thread {
             while (!interrupted()) {
                 doSomethingOrWait();
             }
+        } catch (InterruptedException e) {
+            end();
         } catch (Exception e) {
             logError(e);
-            closeSocket();
-            interrupt();
+            end();
         }
     }
 

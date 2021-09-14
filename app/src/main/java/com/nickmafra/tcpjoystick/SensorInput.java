@@ -16,8 +16,6 @@ public class SensorInput implements SensorEventListener {
     private final SensorManager sensorManager;
     private final Sensor sensor;
 
-    private ButtonData buttonData;
-
     public SensorInput(MainActivity activity) {
         this.activity = activity;
         sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
