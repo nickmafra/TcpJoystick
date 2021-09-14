@@ -12,13 +12,15 @@
     },
     {
       "index": "9",
+      "format": "rectangle",
       "text": "ST",
       "position": {
         "base": "center",
         "x": 0,
         "y": -0.2
       },
-      "size": 0.25
+      "width": 0.3,
+      "height": 0.2
     },
     {
       "index": "1",

@@ -8,7 +8,10 @@ import lombok.Setter;
 public class JoyButton {
     private String type;
     private String index;
+    private String format; // for butons: rectangle ou round
     private String text;
     private JoyButtonPosition position;
     private float size;
+    private float width;
+    private float height;
 }

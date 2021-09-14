@@ -85,48 +85,53 @@ public class ScreenJoystickLayout {
 
     public void addButton(JoyButton joyButton) {
         JoyItemView joyItemView;
-        if (joyButton.getType() == null)
-            joyButton.setType("button");
-        switch (joyButton.getType()) {
-            case "axis":
-                JoyAxisView axisView = new JoyAxisView(mainActivity, 100);
-                axisView.config(joyButton);
-                joyItemView = axisView;
-                break;
-            case "button":
-            default:
-                JoyButtonView buttonView = new JoyButtonView(mainActivity);
-                buttonView.config(joyButton);
-                joyItemView = buttonView;
-                break;
-        }
+        joyItemView = toView(joyButton);
         viewItems.add(joyItemView);
 
-        int size = (int) (joyButton.getSize() * unit);
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(size, size);
+        int width = (int) ((joyButton.getSize() > 0 ? joyButton.getSize() : joyButton.getWidth()) * unit);
+        int height = (int) ((joyButton.getSize() > 0 ? joyButton.getSize() : joyButton.getHeight()) * unit);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(width, height);
         JoyButtonPosition position = joyButton.getPosition();
-        int center = size / 2;
+        int centerX = width / 2;
+        int centerY = height / 2;
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         if (position.getBase() == null)
             position.setBase("center");
         switch (position.getBase()) {
             case "left":
                 layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                layoutParams.leftMargin = (int) (position.getX() * unit) - center;
-                layoutParams.bottomMargin = (int) (position.getY() * unit) - center;
+                layoutParams.leftMargin = (int) (position.getX() * unit) - centerX;
+                layoutParams.bottomMargin = (int) (position.getY() * unit) - centerY;
                 break;
             case "right":
                 layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                layoutParams.rightMargin = (int) -(position.getX() * unit) - center;
-                layoutParams.bottomMargin = (int) (position.getY() * unit) - center;
+                layoutParams.rightMargin = (int) -(position.getX() * unit) - centerX;
+                layoutParams.bottomMargin = (int) (position.getY() * unit) - centerY;
                 break;
             case "center":
             default:
                 layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
                 // TODO: use x as offset
-                layoutParams.bottomMargin = (int) (position.getY() * unit) - center + unit / 2;
+                layoutParams.bottomMargin = (int) (position.getY() * unit) - centerY + unit / 2;
                 break;
         }
         mainActivity.getLayout().addView(joyItemView.asView(), layoutParams);
+    }
+
+    public JoyItemView toView(JoyButton joyButton) {
+        if (joyButton.getType() == null)
+            joyButton.setType("button");
+
+        switch (joyButton.getType()) {
+            case "axis":
+                JoyAxisView axisView = new JoyAxisView(mainActivity, 100);
+                axisView.config(joyButton);
+                return axisView;
+            case "button":
+            default:
+                JoyButtonView buttonView = new JoyButtonView(mainActivity);
+                buttonView.config(joyButton);
+                return buttonView;
+        }
     }
 }

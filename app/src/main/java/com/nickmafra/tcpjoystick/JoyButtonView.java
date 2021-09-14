@@ -59,9 +59,21 @@ public class JoyButtonView extends AppCompatTextView implements JoyItemView {
 
     @Override
     public void config(JoyButton joyButton) {
+        if (joyButton.getFormat() == null)
+            joyButton.setFormat("round");
+
+        switch (joyButton.getFormat()) {
+            case "rectangle":
+                setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.rect_button));
+                break;
+            case "round":
+            default:
+                setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.round_button));
+                break;
+        }
+
         setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
         setText(joyButton.getText());
-        setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.round_button));
         setJoyIndex(mainActivity.getJoyIndex());
         setButtonIndex(joyButton.getIndex());
         JoyButtonTouchListener listener = new JoyButtonTouchListener(this);
