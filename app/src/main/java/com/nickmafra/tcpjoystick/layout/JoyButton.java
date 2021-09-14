@@ -8,6 +8,6 @@ import lombok.Setter;
 public class JoyButton {
     private int index;
     private String text;
-    private Vector2d position;
+    private JoyButtonPosition position;
     private float size;
 }

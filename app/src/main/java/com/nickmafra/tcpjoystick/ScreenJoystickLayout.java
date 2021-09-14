@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import com.nickmafra.tcpjoystick.layout.JoyButton;
 import com.nickmafra.tcpjoystick.layout.JoyLayout;
-import com.nickmafra.tcpjoystick.layout.Vector2d;
+import com.nickmafra.tcpjoystick.layout.JoyButtonPosition;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,19 +81,26 @@ public class ScreenJoystickLayout implements View.OnTouchListener {
         Log.d(TAG, "addButton: unit=" + unit);
         int size = (int) (joyButton.getSize() * unit);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(size, size);
-        Vector2d position = joyButton.getPosition();
+        JoyButtonPosition position = joyButton.getPosition();
         int center = size / 2;
-        if (position.getX() > 0) {
-            layoutParams.leftMargin = (int) (position.getX() * unit) - center;
-        } else {
-            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            layoutParams.rightMargin = (int) -(position.getX() * unit) - center;
-        }
-        if (position.getY() > 0) {
-            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            layoutParams.bottomMargin = (int) (position.getY() * unit) - center;
-        } else {
-            layoutParams.topMargin = (int) -(position.getY() * unit) - center;
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        switch (position.getBase()) {
+            case "left":
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                layoutParams.leftMargin = (int) (position.getX() * unit) - center;
+                layoutParams.bottomMargin = (int) (position.getY() * unit) - center;
+                break;
+            case "right":
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                layoutParams.rightMargin = (int) -(position.getX() * unit) - center;
+                layoutParams.bottomMargin = (int) (position.getY() * unit) - center;
+                break;
+            case "center":
+            default:
+                layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                // TODO: use x as offset
+                layoutParams.bottomMargin = (int) (position.getY() * unit) - center + unit / 2;
+                break;
         }
         activity.getLayout().addView(view, layoutParams);
     }

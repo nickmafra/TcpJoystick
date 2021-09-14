@@ -5,7 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Vector2d {
+public class JoyButtonPosition {
+    private String base;
     private float x;
     private float y;
 }

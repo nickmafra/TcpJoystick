@@ -4,8 +4,9 @@
       "index": 5,
       "text": "↓",
       "position": {
-        "x": 0.5,
-        "y": 0.25
+        "base": "left",
+        "x": 0.4,
+        "y": 0.2
       },
       "size": 0.25
     },
@@ -13,8 +14,9 @@
       "index": 6,
       "text": "←",
       "position": {
-        "x": 0.25,
-        "y": 0.5
+        "base": "left",
+        "x": 0.2,
+        "y": 0.4
       },
       "size": 0.25
     },
@@ -22,8 +24,9 @@
       "index": 7,
       "text": "↑",
       "position": {
-        "x": 0.5,
-        "y": 0.75
+        "base": "left",
+        "x": 0.4,
+        "y": 0.6
       },
       "size": 0.25
     },
@@ -31,8 +34,19 @@
       "index": 8,
       "text": "→",
       "position": {
-        "x": 0.75,
-        "y": 0.5
+        "base": "left",
+        "x": 0.6,
+        "y": 0.4
+      },
+      "size": 0.25
+    },
+    {
+      "index": 9,
+      "text": "ST",
+      "position": {
+        "base": "center",
+        "x": 0,
+        "y": -0.2
       },
       "size": 0.25
     },
@@ -40,8 +54,9 @@
       "index": 1,
       "text": "B1",
       "position": {
-        "x": -0.5,
-        "y": 0.25
+        "base": "right",
+        "x": -0.4,
+        "y": 0.2
       },
       "size": 0.25
     },
@@ -49,8 +64,9 @@
       "index": 2,
       "text": "B2",
       "position": {
-        "x": -0.25,
-        "y": 0.5
+        "base": "right",
+        "x": -0.2,
+        "y": 0.4
       },
       "size": 0.25
     },
@@ -58,8 +74,9 @@
       "index": 3,
       "text": "B3",
       "position": {
-        "x": -0.5,
-        "y": 0.75
+        "base": "right",
+        "x": -0.4,
+        "y": 0.6
       },
       "size": 0.25
     },
@@ -67,8 +84,9 @@
       "index": 4,
       "text": "B4",
       "position": {
-        "x": -0.75,
-        "y": 0.5
+        "base": "right",
+        "x": -0.6,
+        "y": 0.4
       },
       "size": 0.25
     }
