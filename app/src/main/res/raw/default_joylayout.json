@@ -1,47 +1,17 @@
 {
   "buttons": [
     {
-      "index": 5,
-      "text": "↓",
+      "type": "axis",
+      "index": "A",
       "position": {
         "base": "left",
-        "x": 0.4,
-        "y": 0.2
+        "x": 0.3,
+        "y": 0.3
       },
-      "size": 0.25
+      "size": 0.6
     },
     {
-      "index": 6,
-      "text": "←",
-      "position": {
-        "base": "left",
-        "x": 0.2,
-        "y": 0.4
-      },
-      "size": 0.25
-    },
-    {
-      "index": 7,
-      "text": "↑",
-      "position": {
-        "base": "left",
-        "x": 0.4,
-        "y": 0.6
-      },
-      "size": 0.25
-    },
-    {
-      "index": 8,
-      "text": "→",
-      "position": {
-        "base": "left",
-        "x": 0.6,
-        "y": 0.4
-      },
-      "size": 0.25
-    },
-    {
-      "index": 9,
+      "index": "9",
       "text": "ST",
       "position": {
         "base": "center",
@@ -51,7 +21,7 @@
       "size": 0.25
     },
     {
-      "index": 1,
+      "index": "1",
       "text": "B1",
       "position": {
         "base": "right",
@@ -61,7 +31,7 @@
       "size": 0.25
     },
     {
-      "index": 2,
+      "index": "2",
       "text": "B2",
       "position": {
         "base": "right",
@@ -71,7 +41,7 @@
       "size": 0.25
     },
     {
-      "index": 3,
+      "index": "3",
       "text": "B3",
       "position": {
         "base": "right",
@@ -81,7 +51,7 @@
       "size": 0.25
     },
     {
-      "index": 4,
+      "index": "4",
       "text": "B4",
       "position": {
         "base": "right",

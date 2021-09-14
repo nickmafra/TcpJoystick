@@ -16,7 +16,7 @@ import com.nickmafra.tcpjoystick.layout.JoyButtonPosition;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ScreenJoystickLayout implements View.OnTouchListener {
+public class ScreenJoystickLayout implements View.OnTouchListener, JoyAxisView.Listener {
 
     private static final String TAG = ScreenJoystickLayout.class.getSimpleName();
 
@@ -28,6 +28,7 @@ public class ScreenJoystickLayout implements View.OnTouchListener {
 
     private String pressPattern = "{\"B\":{\"Index\":${buttonIndex},\"Mode\":\"p\",\"JNo\":${joyIndex}}}";
     private String releasePattern = "{\"B\":{\"Index\":${buttonIndex},\"Mode\":\"r\",\"JNo\":${joyIndex}}}";
+    private String axisPattern = "{\"${buttonIndex}\":{\"Direction\":\"${direction}\",\"Value\":${value},\"JNo\":${joyIndex}}}";
 
     public ScreenJoystickLayout(MainActivity activity) {
         this.activity = activity;
@@ -68,15 +69,31 @@ public class ScreenJoystickLayout implements View.OnTouchListener {
     }
 
     public void addButton(JoyButton joyButton) {
-        TextView view = new TextView(activity);
-        view.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-        view.setText(joyButton.getText());
-        view.setBackground(ContextCompat.getDrawable(activity, R.drawable.round_button));
-        ButtonData data = new ButtonData(activity.joyIndex, joyButton.getIndex());
-        data.pressData = data.applyPattern(pressPattern).getBytes();
-        data.releaseData = data.applyPattern(releasePattern).getBytes();
-        map.put(view, data);
-        view.setOnTouchListener(this);
+        View view;
+        if (joyButton.getType() == null)
+            joyButton.setType("button");
+        switch (joyButton.getType()) {
+            case "axis":
+                JoyAxisView axisView = new JoyAxisView(activity);
+                axisView.setListener(this);
+                AxisButtonData axisData = new AxisButtonData(1, "A");
+                view = axisView;
+                map.put(view, axisData);
+                break;
+            case "button":
+            default:
+                TextView textView = new TextView(activity);
+                textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+                textView.setText(joyButton.getText());
+                textView.setBackground(ContextCompat.getDrawable(activity, R.drawable.round_button));
+                ButtonData data = new ButtonData(activity.joyIndex, joyButton.getIndex());
+                data.pressData = data.applyPattern(pressPattern).getBytes();
+                data.releaseData = data.applyPattern(releasePattern).getBytes();
+                textView.setOnTouchListener(this);
+                view = textView;
+                map.put(view, data);
+                break;
+        }
 
         Log.d(TAG, "addButton: unit=" + unit);
         int size = (int) (joyButton.getSize() * unit);
@@ -84,6 +101,8 @@ public class ScreenJoystickLayout implements View.OnTouchListener {
         JoyButtonPosition position = joyButton.getPosition();
         int center = size / 2;
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        if (position.getBase() == null)
+            position.setBase("center");
         switch (position.getBase()) {
             case "left":
                 layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
@@ -129,5 +148,25 @@ public class ScreenJoystickLayout implements View.OnTouchListener {
         if (command != null) {
             activity.joyClient.addCommand(command);
         }
+    }
+
+    @Override
+    public void onAxisChanged(View v, double relX, double relY) {
+        ButtonData buttonData = map.get(v);
+        if (!(buttonData instanceof AxisButtonData)) {
+            return;
+        }
+        AxisButtonData data = (AxisButtonData) buttonData;
+
+        sendCommand(data.applyPattern(axisPattern, "X", axisValueToPositiveInt(relX, 1000)).getBytes());
+        sendCommand(data.applyPattern(axisPattern, "Y", axisValueToPositiveInt(relY, 1000)).getBytes());
+    }
+
+    private int axisValueToPositiveInt(double real, int max) {
+        if (real <= -1)
+            return 0;
+        if (real >= 1)
+            return max;
+        return (int) (max * (real + 1) / 2);
     }
 }
