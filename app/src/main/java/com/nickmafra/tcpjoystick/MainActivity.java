@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 import com.nickmafra.tcpjoystick.layout.JoyLayout;
 import com.nickmafra.tcpjoystick.layout.Parser;
+import lombok.Getter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,7 +20,8 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout layout;
     private Parser parser;
     private ScreenJoystickLayout screenJoystickLayout;
-    public final JoyClient joyClient = new JoyClient(this);
+    private JoyClient joyClient;
+    @Getter
     public int joyIndex = 1; // TODO
 
     public RelativeLayout getLayout() {
@@ -39,13 +41,27 @@ public class MainActivity extends AppCompatActivity {
         screenJoystickLayout = new ScreenJoystickLayout(this);
         screenJoystickLayout.joyLayout = joyLayout;
         screenJoystickLayout.load();
-        joyClient.start();
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onResume() {
+        super.onResume();
+
+        if (joyClient != null)
+            throw new IllegalStateException("joyClient is not null on resume!");
+
+        joyClient = new JoyClient(this);
+        joyClient.start();
+        screenJoystickLayout.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        screenJoystickLayout.onPause();
         joyClient.interrupt();
-        super.onDestroy();
+        joyClient = null;
     }
 
     public void openSettings(View view) {
@@ -54,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void connect(View view) {
+        if (joyClient == null)
+            return;
+
         String ip = null;
         Integer port = null;
         try {
@@ -68,5 +87,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         joyClient.setConnection(ip, port);
+    }
+
+    public void addCommand(byte[] command) {
+        if (joyClient != null)
+            joyClient.addCommand(command);
     }
 }

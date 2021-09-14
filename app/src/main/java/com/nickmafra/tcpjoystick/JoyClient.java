@@ -54,6 +54,11 @@ public class JoyClient extends Thread {
         }
     }
 
+    private void end() {
+        closeSocket();
+        interrupt();
+    }
+
     private void reconnect() {
         closeSocket();
         if (socketAddress == null) {
@@ -118,10 +123,11 @@ public class JoyClient extends Thread {
             while (!interrupted()) {
                 doSomethingOrWait();
             }
+        } catch (InterruptedException e) {
+            end();
         } catch (Exception e) {
             logError(e);
-            closeSocket();
-            interrupt();
+            end();
         }
     }
 
