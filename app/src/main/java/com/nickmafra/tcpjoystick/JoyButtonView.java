@@ -17,6 +17,10 @@ public class JoyButtonView extends AppCompatTextView implements JoyItemView {
     private static final String PRESS_PATTERN = "{\"B\":{\"Index\":${buttonIndex},\"Mode\":\"p\",\"JNo\":${joyIndex}}}";
     private static final String RELEASE_PATTERN = "{\"B\":{\"Index\":${buttonIndex},\"Mode\":\"r\",\"JNo\":${joyIndex}}}";
 
+    public static final String ROUND_FORMAT = "round";
+    public static final String RECT_FORMAT = "rectangle";
+    public static final String DEFAULT_FORMAT = ROUND_FORMAT;
+
     private final MainActivity mainActivity;
     private int joyIndex;
     private String buttonIndex;
@@ -60,16 +64,17 @@ public class JoyButtonView extends AppCompatTextView implements JoyItemView {
     @Override
     public void config(JoyButton joyButton) {
         if (joyButton.getFormat() == null)
-            joyButton.setFormat("round");
+            joyButton.setFormat(DEFAULT_FORMAT);
 
         switch (joyButton.getFormat()) {
-            case "rectangle":
+            case RECT_FORMAT:
                 setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.rect_button));
                 break;
-            case "round":
-            default:
+            case ROUND_FORMAT:
                 setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.round_button));
                 break;
+            default:
+                throw new IllegalArgumentException("Invalid joyButton format: " + joyButton.getFormat());
         }
 
         setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);

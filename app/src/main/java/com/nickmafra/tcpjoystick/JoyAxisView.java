@@ -9,39 +9,16 @@ import android.view.MotionEvent;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.nickmafra.tcpjoystick.layout.JoyButton;
-import lombok.Getter;
-import lombok.Setter;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-public class JoyAxisView extends View implements Runnable, JoyItemView {
+public class JoyAxisView extends View implements JoyItemView {
 
     private static final String TAG = JoyAxisView.class.getSimpleName();
 
-    private static final int INITIAL_DELAY = 1000;
-    private static final int DEFAULT_MAX_SEND_DELAY = 500;
-    private static final String AXIS_PRE_PATTERN = "{\"${buttonIndex}\":{\"Direction\":\"${direction}\",\"Value\":";
-    private static final String AXIS_POS_PATTERN = ",\"JNo\":${joyIndex}}}";
+    private final AxisInput axisInput;
 
-    @Getter
-    private final MainActivity mainActivity;
-
-    private int delay;
-    private ScheduledExecutorService executor;
-
-    @Setter
     private Paint circlePaint;
-    @Setter
     private Paint buttonPaint;
-    @Setter
-    private JoyAxisViewListener listener;
 
-    @Setter
-    private volatile float deadZonePercent = 0.1F;
-
-    private final JoyAxisView thisView;
     private float circleRadius;
     private float buttonRadius;
     private int centerX;
@@ -49,57 +26,18 @@ public class JoyAxisView extends View implements Runnable, JoyItemView {
     private int positionX;
     private int positionY;
 
-    private volatile double relX;
-    private volatile double relY;
-    private volatile double lastRelX;
-    private volatile double lastRelY;
-
-    private final int maxSendDelay;
-    private long lastSend;
-
-    @Getter
-    @Setter
-    private int joyIndex;
-    @Getter
-    @Setter
-    private String buttonIndex;
-
-    public JoyAxisView(MainActivity mainActivity, int delay, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public JoyAxisView(MainActivity mainActivity, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(mainActivity, attrs, defStyleAttr);
 
-        this.mainActivity = mainActivity;
-        this.delay = delay;
-        setDefaultPaints();
-        thisView = this;
-        maxSendDelay = Math.max(delay, DEFAULT_MAX_SEND_DELAY);
+        this.axisInput = new AxisInput(mainActivity, this);
     }
 
-    public JoyAxisView(MainActivity mainActivity, int delay, @Nullable AttributeSet attrs) {
-        this(mainActivity, delay, attrs, 0);
+    public JoyAxisView(MainActivity mainActivity, @Nullable AttributeSet attrs) {
+        this(mainActivity, attrs, 0);
     }
 
-    public JoyAxisView(MainActivity mainActivity, int delay) {
-        this(mainActivity, delay, null, 0);
-    }
-
-    @Override
-    public View asView() {
-        return this;
-    }
-
-    @Override
-    public void onResume() {
-        if (executor != null)
-            throw new IllegalStateException("executor is not null on resume!");
-
-        executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate(this, INITIAL_DELAY, delay, TimeUnit.MILLISECONDS);
-    }
-
-    @Override
-    public void onPause() {
-        executor.shutdownNow();
-        executor = null;
+    public JoyAxisView(MainActivity mainActivity) {
+        this(mainActivity, null, 0);
     }
 
     public void setDefaultPaints() {
@@ -110,25 +48,6 @@ public class JoyAxisView extends View implements Runnable, JoyItemView {
         buttonPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         buttonPaint.setColor(Color.parseColor("#4C4C4C"));
         buttonPaint.setStyle(Paint.Style.FILL);
-    }
-
-    public String applyPattern(String pattern, String direction) {
-        return pattern
-                .replace("${joyIndex}", String.valueOf(joyIndex))
-                .replace("${buttonIndex}", buttonIndex)
-                .replace("${direction}", direction);
-    }
-
-    @Override
-    public void config(JoyButton joyButton) {
-        setJoyIndex(mainActivity.getJoyIndex());
-        setButtonIndex(joyButton.getIndex());
-        JoyAxisViewDefaultListener defaultListener = new JoyAxisViewDefaultListener(this);
-        defaultListener.setPreDataX(applyPattern(AXIS_PRE_PATTERN, "X"));
-        defaultListener.setPosDataX(applyPattern(AXIS_POS_PATTERN, "X"));
-        defaultListener.setPreDataY(applyPattern(AXIS_PRE_PATTERN, "Y"));
-        defaultListener.setPosDataY(applyPattern(AXIS_POS_PATTERN, "Y"));
-        this.listener = defaultListener;
     }
 
     @Override
@@ -147,8 +66,10 @@ public class JoyAxisView extends View implements Runnable, JoyItemView {
         centerX = (getWidth()) / 2;
         centerY = (getHeight()) / 2;
 
-        canvas.drawCircle(centerX, centerY, circleRadius, circlePaint);
-        canvas.drawCircle(positionX, positionY, buttonRadius, buttonPaint);
+        if (circlePaint != null)
+            canvas.drawCircle(centerX, centerY, circleRadius, circlePaint);
+        if (buttonPaint != null)
+            canvas.drawCircle(positionX, positionY, buttonRadius, buttonPaint);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -167,35 +88,35 @@ public class JoyAxisView extends View implements Runnable, JoyItemView {
         double abs = Math.hypot(dx, dy);
         if (abs > circleRadius) {
             double factor = abs / circleRadius;
-            abs = circleRadius;
             dx /= factor;
             dy /= factor;
             positionX = centerX + dx;
             positionY = centerY + dy;
         }
-        double relAbs = abs / circleRadius;
-        if (relAbs <= deadZonePercent) {
-            relX = 0;
-            relY = 0;
-        } else {
-            relX = dx / circleRadius;
-            relY = dy / circleRadius;
-        }
+        axisInput.setRels(dx / circleRadius, dy / circleRadius);
 
         invalidate(); // redraw
         return true;
     }
 
     @Override
-    public void run() {
-        long time = System.currentTimeMillis();
-        long diff = time - lastSend;
-        if ((relX != lastRelX || relY != lastRelY || diff > maxSendDelay)) {
-            lastSend = time;
-            lastRelX = relX;
-            lastRelY = relY;
-            if (listener != null)
-                listener.onAxisChanged(thisView, relX, relY);
-        }
+    public View asView() {
+        return this;
+    }
+
+    @Override
+    public void onResume() {
+        axisInput.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        axisInput.onPause();
+    }
+
+    @Override
+    public void config(JoyButton joyButton) {
+        setDefaultPaints();
+        axisInput.config(joyButton);
     }
 }

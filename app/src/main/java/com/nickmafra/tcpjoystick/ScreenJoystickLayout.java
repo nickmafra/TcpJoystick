@@ -4,6 +4,7 @@ import android.graphics.Insets;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowMetrics;
 import android.widget.RelativeLayout;
@@ -11,6 +12,7 @@ import com.nickmafra.tcpjoystick.layout.JoyButton;
 import com.nickmafra.tcpjoystick.layout.JoyButtonPosition;
 import com.nickmafra.tcpjoystick.layout.JoyLayout;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +21,17 @@ public class ScreenJoystickLayout {
 
     private static final String TAG = ScreenJoystickLayout.class.getSimpleName();
 
+    public static final String BUTTON_TYPE = "button";
+    public static final String AXIS_TYPE = "axis";
+    public static final String DEFAULT_TYPE = BUTTON_TYPE;
+
     @Getter
     private final MainActivity mainActivity;
     private final int unit;
-    public JoyLayout joyLayout;
+    @Setter
+    private JoyLayout joyLayout;
 
-    private List<JoyItemView> viewItems = new ArrayList<>();
+    private final List<JoyItemView> viewItems = new ArrayList<>();
 
     public ScreenJoystickLayout(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -46,7 +53,9 @@ public class ScreenJoystickLayout {
     public void clear() {
         for (JoyItemView joyItemView : viewItems) {
             joyItemView.onPause();
-            mainActivity.getLayout().removeView(joyItemView.asView());
+            View view = joyItemView.asView();
+            if (view != null)
+                mainActivity.getLayout().removeView(view);
         }
         viewItems.clear();
     }
@@ -88,7 +97,11 @@ public class ScreenJoystickLayout {
     public void addButton(JoyButton joyButton) {
         JoyItemView joyItemView;
         joyItemView = toView(joyButton);
+        joyItemView.config(joyButton);
         viewItems.add(joyItemView);
+
+        if (joyItemView.asView() == null)
+            return; // invisible
 
         int width = (int) ((joyButton.getSize() > 0 ? joyButton.getSize() : joyButton.getWidth()) * unit);
         int height = (int) ((joyButton.getSize() > 0 ? joyButton.getSize() : joyButton.getHeight()) * unit);
@@ -122,18 +135,15 @@ public class ScreenJoystickLayout {
 
     public JoyItemView toView(JoyButton joyButton) {
         if (joyButton.getType() == null)
-            joyButton.setType("button");
+            joyButton.setType(DEFAULT_TYPE);
 
         switch (joyButton.getType()) {
-            case "axis":
-                JoyAxisView axisView = new JoyAxisView(mainActivity, 100);
-                axisView.config(joyButton);
-                return axisView;
-            case "button":
+            case AXIS_TYPE:
+                return new JoyAxisView(mainActivity);
+            case BUTTON_TYPE:
+                return new JoyButtonView(mainActivity);
             default:
-                JoyButtonView buttonView = new JoyButtonView(mainActivity);
-                buttonView.config(joyButton);
-                return buttonView;
+                throw new IllegalArgumentException("Invalid joyButton type: " + joyButton.getType());
         }
     }
 }

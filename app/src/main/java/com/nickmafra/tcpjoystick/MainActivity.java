@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         menuLayout = findViewById(R.id.menu_layout);
 
         screenJoystickLayout = new ScreenJoystickLayout(this);
-        screenJoystickLayout.joyLayout = layouts.get(1);
+        screenJoystickLayout.setJoyLayout(layouts.get(0));
         screenJoystickLayout.load();
     }
 
