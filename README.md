@@ -6,6 +6,5 @@ Suggestion: install vJoy to simulate a joystick on Windows and SC vJoy Server to
 
 TODO List:
 
-- select layout in settings
 - save and load joystick layout to/from files
 - fast change between joystick layouts

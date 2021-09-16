@@ -11,4 +11,6 @@
     <string name="secondary_layout_title">Secondary Layout</string>
     <string name="connect_text">Connect</string>
     <string name="joystick_index">Joystick index</string>
+    <string name="joystick_header">Joystick</string>
+    <string name="joystick_layout_title">Layout</string>
 </resources>

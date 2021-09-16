@@ -1,5 +1,6 @@
 {
-  "name": "race",
+  "id": "default_race_joylayout",
+  "name": "Default Race joystick",
   "buttons": [
     {
       "type": "sensor",

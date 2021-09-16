@@ -25,14 +25,15 @@ public class MainActivity extends AppCompatActivity {
     @Getter
     private LinearLayout menuLayout;
 
-    private Parser parser;
+    public static final Parser parser = new Parser();
+    private static final int[] defaultLayoutsIds = {
+            R.raw.default_joylayout,
+            R.raw.default_race_joylayout
+    };
+    public static final List<JoyLayout> defaultLayouts = new ArrayList<>();
+
     private ScreenJoystickLayout screenJoystickLayout;
     private JoyClient joyClient;
-    private static final int[] defaultLayouts = {
-            R.raw.default_joylayout,
-            R.raw.race_joylayout
-    };
-    private final List<JoyLayout> layouts = new ArrayList<>();
 
     @Getter
     public int joyIndex;
@@ -49,28 +50,45 @@ public class MainActivity extends AppCompatActivity {
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
         layout = findViewById(R.id.main_layout);
 
-        parser = new Parser();
         loadDefaultLayouts();
 
         menuLayout = findViewById(R.id.menu_layout);
 
         screenJoystickLayout = new ScreenJoystickLayout(this);
-        screenJoystickLayout.setJoyLayout(layouts.get(0));
     }
 
     private void loadDefaultLayouts() {
-        for (int rawFile : defaultLayouts) {
-            layouts.add(parser.load(getResources().openRawResource(rawFile)));
+        if (defaultLayouts.isEmpty()) {
+            for (int rawFile : defaultLayoutsIds) {
+                defaultLayouts.add(parser.load(getResources().openRawResource(rawFile)));
+            }
         }
     }
 
-    private void loadLayout() {
+    private boolean loadLayout() {
+        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String layoutId = shared.getString("joystick_layout", "default");
+        JoyLayout joyLayout = null;
+        for (JoyLayout aLayout : defaultLayouts) {
+            if (aLayout.getId().equals(layoutId)) {
+                joyLayout = aLayout;
+                break;
+            }
+        }
+        if (joyLayout == null) {
+            Toast.makeText(this, "Not found layout " + layoutId, Toast.LENGTH_SHORT).show();
+            return false;
+        }
         try {
+            screenJoystickLayout.setJoyLayout(joyLayout);
             screenJoystickLayout.load();
+            return true;
         } catch (Exception e) {
             String msg = "Error during load layout";
             Log.d(TAG, msg, e);
             Toast.makeText(this, msg + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
+            return false;
         }
     }
 
@@ -94,10 +112,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (!loadJoyIndex())
+        if (!loadJoyIndex() || !loadLayout())
             return;
-
-        loadLayout();
 
         if (joyClient != null)
             throw new IllegalStateException("joyClient is not null on resume!");

@@ -27,6 +27,16 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+            app:title="@string/joystick_header">
+
+        <ListPreference
+                app:key="joystick_layout"
+                app:title="@string/joystick_layout_title"
+                app:defaultValue="default"
+                app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
             app:title="@string/fast_change_header">
 
         <SwitchPreferenceCompat

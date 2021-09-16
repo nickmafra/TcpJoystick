@@ -5,7 +5,11 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
+import com.nickmafra.tcpjoystick.layout.JoyLayout;
+
+import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -37,6 +41,28 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
+
+            loadLayoutList();
+        }
+
+        private void loadLayoutList() {
+            String key = "joystick_layout";
+            ListPreference layoutList = findPreference(key);
+            if (layoutList == null)
+                throw new NullPointerException(key + " not found.");
+
+            List<JoyLayout> layouts = MainActivity.defaultLayouts;
+
+            String[] ids = new String[layouts.size()];
+            String[] names = new String[layouts.size()];
+            for (int i = 0; i < layouts.size(); i++) {
+                JoyLayout layout = layouts.get(i);
+                ids[i] = layout.getId();
+                names[i] = layout.getName();
+            }
+
+            layoutList.setEntries(names);
+            layoutList.setEntryValues(ids);
         }
     }
 }

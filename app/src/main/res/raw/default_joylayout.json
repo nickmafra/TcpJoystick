@@ -1,5 +1,6 @@
 {
-  "name": "sample",
+  "id": "default_joylayout",
+  "name": "Default joystick",
   "buttons": [
     {
       "type": "axis",

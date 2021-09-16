@@ -8,6 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 public class JoyLayout {
+    private String id;
     private String name;
     private List<JoyButton> buttons;
 }
