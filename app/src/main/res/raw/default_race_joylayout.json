@@ -18,16 +18,40 @@
       "size": 0.25
     },
     {
+      "index": "3",
+      "format": "rectangle",
+      "text": "B3",
+      "position": {
+        "base": "left",
+        "x": 0.4,
+        "y": 0.65
+      },
+      "width": 0.8,
+      "height": 0.4
+    },
+    {
+      "index": "4",
+      "format": "rectangle",
+      "text": "B4",
+      "position": {
+        "base": "left",
+        "x": 0.4,
+        "y": 0.2
+      },
+      "width": 0.8,
+      "height": 0.4
+    },
+    {
       "index": "1",
       "format": "rectangle",
       "text": "B1",
       "position": {
-        "base": "left",
-        "x": 0.4,
-        "y": 0.4
+        "base": "right",
+        "x": -0.4,
+        "y": 0.2
       },
       "width": 0.8,
-      "height": 0.8
+      "height": 0.4
     },
     {
       "index": "2",
@@ -36,10 +60,10 @@
       "position": {
         "base": "right",
         "x": -0.4,
-        "y": 0.4
+        "y": 0.65
       },
       "width": 0.8,
-      "height": 0.8
+      "height": 0.4
     }
   ]
 }
