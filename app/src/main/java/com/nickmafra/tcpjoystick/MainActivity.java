@@ -54,13 +54,23 @@ public class MainActivity extends AppCompatActivity {
         menuLayout = findViewById(R.id.menu_layout);
 
         screenJoystickLayout = new ScreenJoystickLayout(this);
-        screenJoystickLayout.setJoyLayout(layouts.get(0));
-        screenJoystickLayout.load();
+        loadLayout(layouts.get(1));
     }
 
     private void loadDefaultLayouts() {
         for (int rawFile : defaultLayouts) {
             layouts.add(parser.load(getResources().openRawResource(rawFile)));
+        }
+    }
+
+    private void loadLayout(JoyLayout joyLayout) {
+        screenJoystickLayout.setJoyLayout(joyLayout);
+        try {
+            screenJoystickLayout.load();
+        } catch (Exception e) {
+            String msg = "Error during load layout";
+            Log.d(TAG, msg, e);
+            Toast.makeText(this, msg + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -85,11 +95,13 @@ public class MainActivity extends AppCompatActivity {
         joyClient = null;
     }
 
+    @SuppressWarnings("unused")
     public void openSettings(View view) {
         Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
         startActivity(intent);
     }
 
+    @SuppressWarnings("unused")
     public void connect(View view) {
         if (joyClient == null)
             return;

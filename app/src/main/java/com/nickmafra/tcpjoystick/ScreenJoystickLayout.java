@@ -23,6 +23,7 @@ public class ScreenJoystickLayout {
 
     public static final String BUTTON_TYPE = "button";
     public static final String AXIS_TYPE = "axis";
+    public static final String SENSOR_TYPE = "sensor";
     public static final String DEFAULT_TYPE = BUTTON_TYPE;
 
     @Getter
@@ -74,6 +75,7 @@ public class ScreenJoystickLayout {
         mainActivity.getMenuLayout().bringToFront();
     }
 
+    @SuppressWarnings("deprecation")
     public int getSpaceUnit() {
         Log.d(TAG, "getSpaceUnit: SDK version=" + Build.VERSION.SDK_INT);
         int spaceUnit;
@@ -142,6 +144,8 @@ public class ScreenJoystickLayout {
                 return new JoyAxisView(mainActivity);
             case BUTTON_TYPE:
                 return new JoyButtonView(mainActivity);
+            case SENSOR_TYPE:
+                return new SensorInput(mainActivity);
             default:
                 throw new IllegalArgumentException("Invalid joyButton type: " + joyButton.getType());
         }

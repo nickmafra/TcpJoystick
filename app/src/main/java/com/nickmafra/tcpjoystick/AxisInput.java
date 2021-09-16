@@ -1,5 +1,6 @@
 package com.nickmafra.tcpjoystick;
 
+import android.util.Log;
 import android.view.View;
 import com.nickmafra.tcpjoystick.layout.JoyButton;
 import lombok.Setter;
@@ -10,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class AxisInput implements Runnable {
+
+    private static final String TAG = AxisInput.class.getSimpleName();
 
     private static final int INITIAL_DELAY = 1000;
     private static final int DEFAULT_DELAY = 100;
@@ -27,6 +30,8 @@ public class AxisInput implements Runnable {
 
     private int joyIndex;
     private String buttonIndex;
+    private String prePattern;
+    private String posPattern;
 
     private volatile boolean isInt;
     private volatile double minIntValue;
@@ -82,7 +87,7 @@ public class AxisInput implements Runnable {
         executor = null;
     }
 
-    public void setMinMaxValues(int minIntValue, int maxIntValue) {
+    public void setMinMaxValues(double minIntValue, double maxIntValue) {
         this.minIntValue = minIntValue;
         this.maxIntValue = maxIntValue;
         this.range = maxIntValue - minIntValue;
@@ -96,7 +101,7 @@ public class AxisInput implements Runnable {
                 .replace("${direction}", direction);
     }
 
-    private void setDefaultListenerFromPattern(String prePattern, String posPattern) {
+    private void setDefaultListenerFromPattern() {
         JoyAxisDefaultListener listener = new JoyAxisDefaultListener(mainActivity);
         listener.setPerformanceData(
                 applyPattern(prePattern, "X"),
@@ -113,11 +118,16 @@ public class AxisInput implements Runnable {
         isInt = true;
         // defaults for vJoy server
         setMinMaxValues(0, 1000);
-        setDefaultListenerFromPattern(AXIS_PRE_PATTERN, AXIS_POS_PATTERN);
+        prePattern = AXIS_PRE_PATTERN;
+        posPattern = AXIS_POS_PATTERN;
+        setDefaultListenerFromPattern();
     }
 
     @Override
     public void run() {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "run: rels=" + relX + ", " + relY);
+        }
         long time = System.currentTimeMillis();
         long diff = time - lastSend;
         if ((relX != lastRelX || relY != lastRelY || diff > maxSendDelay)) {

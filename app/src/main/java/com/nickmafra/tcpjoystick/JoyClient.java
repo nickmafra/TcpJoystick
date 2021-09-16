@@ -44,6 +44,7 @@ public class JoyClient extends Thread {
     }
 
     private void closeSocket() {
+        commands.clear();
         try {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
@@ -77,6 +78,10 @@ public class JoyClient extends Thread {
         }
     }
 
+    private boolean needConnection() {
+        return socket == null || !socket.isConnected() || socket.isClosed();
+    }
+
     private boolean reconnectIfNeeded() {
         InetSocketAddress newSocketAddress = atomicSocketAddress.get();
         if (newSocketAddress == socketAddress) {
@@ -88,7 +93,7 @@ public class JoyClient extends Thread {
     }
 
     private boolean sendCommandIfNeeded() {
-        if (socket == null || !socket.isConnected() || socket.isClosed()) {
+        if (needConnection()) {
             commands.clear();
             return false;
         }
@@ -100,6 +105,7 @@ public class JoyClient extends Thread {
                 socket.getOutputStream().write(command);
             } catch (IOException e) {
                 logError(new RuntimeException("Error during command sending.", e));
+                closeSocket();
             }
         }
         return any;

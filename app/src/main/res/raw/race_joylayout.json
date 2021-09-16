@@ -2,6 +2,10 @@
   "name": "race",
   "buttons": [
     {
+      "type": "sensor",
+      "index": "A"
+    },
+    {
       "index": "5",
       "format": "round",
       "text": "ST",
