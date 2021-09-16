@@ -1,15 +1,19 @@
 package com.nickmafra.tcpjoystick;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import com.nickmafra.tcpjoystick.layout.JoyLayout;
 
 import java.util.List;
+
+import static com.nickmafra.tcpjoystick.Utils.toBoolean;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -37,10 +41,16 @@ public class SettingsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static class SettingsFragment extends PreferenceFragmentCompat {
+    public static class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+        private SharedPreferences sharedPreferences;
+
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
+
+            sharedPreferences = getPreferenceManager().getSharedPreferences();
+            sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
             loadLayoutList();
         }
@@ -63,6 +73,25 @@ public class SettingsActivity extends AppCompatActivity {
 
             layoutList.setEntries(names);
             layoutList.setEntryValues(ids);
+        }
+
+        private static int toModeNightInt(String ternary) {
+            Boolean modeNight = toBoolean(ternary);
+            if (modeNight == null) {
+                return AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+            } else if (modeNight) {
+                return AppCompatDelegate.MODE_NIGHT_YES;
+            } else {
+                return AppCompatDelegate.MODE_NIGHT_NO;
+            }
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (key.equals("mode_night")) {
+                String modeNight = sharedPreferences.getString(key, null);
+                AppCompatDelegate.setDefaultNightMode(toModeNightInt(modeNight));
+            }
         }
     }
 }

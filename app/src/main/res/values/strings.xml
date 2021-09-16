@@ -13,4 +13,6 @@
     <string name="joystick_index">Joystick index</string>
     <string name="joystick_header">Joystick</string>
     <string name="joystick_layout_title">Layout</string>
+    <string name="appearance_header">Appearance</string>
+    <string name="mode_night_title">Dark Theme</string>
 </resources>

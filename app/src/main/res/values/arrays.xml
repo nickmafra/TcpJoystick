@@ -9,4 +9,14 @@
         <item>reply</item>
         <item>reply_all</item>
     </string-array>
+    <string-array name="yes_no_auto_entries">
+        <item>Yes</item>
+        <item>No</item>
+        <item>Automatic</item>
+    </string-array>
+    <string-array name="true_false_null_values">
+        <item>true</item>
+        <item>false</item>
+        <item>null</item>
+    </string-array>
 </resources>

@@ -37,6 +37,17 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+            app:title="@string/appearance_header">
+        <ListPreference
+                app:key="mode_night"
+                app:title="@string/mode_night_title"
+                app:entries="@array/yes_no_auto_entries"
+                app:entryValues="@array/true_false_null_values"
+                app:defaultValue="null"
+                app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
             app:title="@string/fast_change_header">
 
         <SwitchPreferenceCompat
