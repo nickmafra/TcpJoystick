@@ -32,7 +32,7 @@
         <ListPreference
                 app:key="joystick_layout"
                 app:title="@string/joystick_layout_title"
-                app:defaultValue="default"
+                app:defaultValue="default_joylayout"
                 app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
