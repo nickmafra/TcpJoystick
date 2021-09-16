@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private final List<JoyLayout> layouts = new ArrayList<>();
 
     @Getter
-    public int joyIndex = 1; // TODO
+    public int joyIndex;
 
     public RelativeLayout getLayout() {
         return layout;
@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
         layout = findViewById(R.id.main_layout);
 
         parser = new Parser();
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         menuLayout = findViewById(R.id.menu_layout);
 
         screenJoystickLayout = new ScreenJoystickLayout(this);
-        loadLayout(layouts.get(1));
+        screenJoystickLayout.setJoyLayout(layouts.get(0));
     }
 
     private void loadDefaultLayouts() {
@@ -63,8 +64,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void loadLayout(JoyLayout joyLayout) {
-        screenJoystickLayout.setJoyLayout(joyLayout);
+    private void loadLayout() {
         try {
             screenJoystickLayout.load();
         } catch (Exception e) {
@@ -74,9 +74,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean loadJoyIndex() {
+        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
+
+        joyIndex = -1;
+        try {
+            joyIndex = Integer.parseInt(shared.getString("joystick_index", "-1"));
+        } catch (Exception e) {
+            Log.d(TAG, "connect: error during get joystick.", e);
+        }
+        if (joyIndex < 0) {
+            Toast.makeText(this, "Invalid joystick index", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (!loadJoyIndex())
+            return;
+
+        loadLayout();
 
         if (joyClient != null)
             throw new IllegalStateException("joyClient is not null on resume!");
@@ -91,8 +112,10 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         screenJoystickLayout.onPause();
-        joyClient.interrupt();
-        joyClient = null;
+        if (joyClient != null) {
+            joyClient.interrupt();
+            joyClient = null;
+        }
     }
 
     @SuppressWarnings("unused")
@@ -103,19 +126,22 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressWarnings("unused")
     public void connect(View view) {
-        if (joyClient == null)
+        if (joyClient == null) {
+            Toast.makeText(this, "Invalid server settings.", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
 
         String ip = null;
-        Integer port = null;
+        int port = -1;
         try {
-            SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
-            ip = shared.getString("ip", null);
-            port = Integer.parseInt(shared.getString("port", "0"));
+            ip = shared.getString("ip", "");
+            port = Integer.parseInt(shared.getString("port", "-1"));
         } catch (Exception e) {
             Log.d(TAG, "connect: error during get IP/port preferences.", e);
         }
-        if (ip == null || ip.isEmpty() || port == null || port <= 0) {
+        if (ip == null || ip.isEmpty() || port <= 0) {
             Toast.makeText(this, "Invalid IP/port", Toast.LENGTH_SHORT).show();
             return;
         }

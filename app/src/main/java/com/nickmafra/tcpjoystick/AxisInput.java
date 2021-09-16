@@ -28,7 +28,6 @@ public class AxisInput implements Runnable {
     private volatile int delay = DEFAULT_DELAY;
     private volatile int maxSendDelay = DEFAULT_MAX_SEND_DELAY;
 
-    private int joyIndex;
     private String buttonIndex;
     private String prePattern;
     private String posPattern;
@@ -83,8 +82,10 @@ public class AxisInput implements Runnable {
     }
 
     public void onPause() {
-        executor.shutdownNow();
-        executor = null;
+        if (executor != null) {
+            executor.shutdownNow();
+            executor = null;
+        }
     }
 
     public void setMinMaxValues(double minIntValue, double maxIntValue) {
@@ -96,7 +97,7 @@ public class AxisInput implements Runnable {
 
     public String applyPattern(String pattern, String direction) {
         return pattern
-                .replace("${joyIndex}", String.valueOf(joyIndex))
+                .replace("${joyIndex}", String.valueOf(mainActivity.getJoyIndex()))
                 .replace("${buttonIndex}", buttonIndex)
                 .replace("${direction}", direction);
     }
@@ -113,7 +114,6 @@ public class AxisInput implements Runnable {
     }
 
     public void config(JoyButton joyButton) {
-        joyIndex = mainActivity.getJoyIndex();
         buttonIndex = joyButton.getIndex();
         isInt = true;
         // defaults for vJoy server

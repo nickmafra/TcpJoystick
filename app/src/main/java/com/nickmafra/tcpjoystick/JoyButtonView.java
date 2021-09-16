@@ -22,7 +22,6 @@ public class JoyButtonView extends AppCompatTextView implements JoyItemView {
     public static final String DEFAULT_FORMAT = ROUND_FORMAT;
 
     private final MainActivity mainActivity;
-    private int joyIndex;
     private String buttonIndex;
     
     public JoyButtonView(MainActivity mainActivity) {
@@ -57,7 +56,7 @@ public class JoyButtonView extends AppCompatTextView implements JoyItemView {
 
     public String applyPattern(String pattern) {
         return pattern
-                .replace("${joyIndex}", String.valueOf(joyIndex))
+                .replace("${joyIndex}", String.valueOf(mainActivity.getJoyIndex()))
                 .replace("${buttonIndex}", buttonIndex);
     }
 
@@ -79,7 +78,6 @@ public class JoyButtonView extends AppCompatTextView implements JoyItemView {
 
         setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
         setText(joyButton.getText());
-        setJoyIndex(mainActivity.getJoyIndex());
         setButtonIndex(joyButton.getIndex());
         JoyButtonTouchListener listener = new JoyButtonTouchListener(this);
         listener.setPressData(applyPattern(PRESS_PATTERN).getBytes());

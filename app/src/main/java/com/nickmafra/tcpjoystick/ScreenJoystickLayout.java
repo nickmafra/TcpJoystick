@@ -40,15 +40,14 @@ public class ScreenJoystickLayout {
     }
 
     protected void onResume() {
+        load();
         for (JoyItemView joyItemView : viewItems) {
             joyItemView.onResume();
         }
     }
 
     protected void onPause() {
-        for (JoyItemView joyItemView : viewItems) {
-            joyItemView.onPause();
-        }
+        clear();
     }
 
     public void clear() {

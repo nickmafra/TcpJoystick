@@ -1,5 +1,6 @@
 <PreferenceScreen
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
             app:title="@string/server_header">
@@ -7,11 +8,21 @@
         <EditTextPreference
                 app:key="ip"
                 app:title="IP"
+                app:defaultValue="127.0.0.1"
                 app:useSimpleSummaryProvider="true"/>
 
         <EditTextPreference
                 app:key="port"
                 app:title="@string/port"
+                android:inputType="number"
+                app:defaultValue="8080"
+                app:useSimpleSummaryProvider="true"/>
+
+        <EditTextPreference
+                app:key="joystick_index"
+                app:title="@string/joystick_index"
+                android:inputType="number"
+                app:defaultValue="1"
                 app:useSimpleSummaryProvider="true"/>
     </PreferenceCategory>
 
@@ -20,7 +31,8 @@
 
         <SwitchPreferenceCompat
                 app:key="fast_change"
-                app:title="@string/fast_change_title"/>
+                app:title="@string/fast_change_title"
+                app:useSimpleSummaryProvider="true" />
 
         <ListPreference
                 app:key="secondary_layout"
@@ -28,8 +40,8 @@
                 app:entries="@array/secondary_layout_entries"
                 app:entryValues="@array/secondary_layout_values"
                 app:defaultValue="null"
-                app:useSimpleSummaryProvider="true"
-                app:dependency="fast_change"/>
+                app:dependency="fast_change"
+                app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
