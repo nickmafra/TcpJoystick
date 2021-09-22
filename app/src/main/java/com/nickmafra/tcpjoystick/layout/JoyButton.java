@@ -7,8 +7,10 @@ import lombok.Setter;
 @Setter
 public class JoyButton {
     private String type;
+    private String subtype;
     private String index;
-    private String format; // for butons: rectangle ou round
+    private String direction; // for POV buttons: d/r/u/l
+    private String format; // for buttons: rectangle/round
     private String text;
     private JoyButtonPosition position;
     private float size;

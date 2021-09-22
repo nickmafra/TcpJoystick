@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+            android:left="21px"
+            android:right="21px"
+            android:top="21px"
+            android:bottom="21px">
+        <rotate
+                android:fromDegrees="45">
+            <shape android:shape="rectangle">
+                <size
+                        android:width="100px"
+                        android:height="100px" />
+                <solid android:color="@color/colorButton" />
+                <corners android:radius="2px"/>
+            </shape>
+        </rotate>
+    </item>
+    <item
+            android:left="71px"
+            android:right="0px"
+            android:top="1px"
+            android:bottom="1px">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/colorButton" />
+            <corners android:radius="10px"/>
+        </shape>
+    </item>
+    <item
+            android:left="71px"
+            android:right="10px"
+            android:top="1px"
+            android:bottom="1px">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/colorButton" />
+        </shape>
+    </item>
+
+</layer-list>

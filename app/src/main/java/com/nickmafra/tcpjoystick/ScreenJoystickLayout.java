@@ -26,6 +26,10 @@ public class ScreenJoystickLayout {
     public static final String SENSOR_TYPE = "sensor";
     public static final String DEFAULT_TYPE = BUTTON_TYPE;
 
+    public static final String BUTTON_SUBTYPE_SIMPLE = "simple";
+    public static final String BUTTON_SUBTYPE_POV = "POV";
+    public static final String DEFAULT_BUTTON_SUBTYPE = BUTTON_SUBTYPE_SIMPLE;
+
     @Getter
     private final MainActivity mainActivity;
     private final int unit;
@@ -142,6 +146,11 @@ public class ScreenJoystickLayout {
             case AXIS_TYPE:
                 return new JoyAxisView(mainActivity);
             case BUTTON_TYPE:
+                if (joyButton.getSubtype() == null)
+                    joyButton.setSubtype(DEFAULT_BUTTON_SUBTYPE);
+                switch (joyButton.getSubtype()) {
+                    case BUTTON_SUBTYPE_SIMPLE:
+                }
                 return new JoyButtonView(mainActivity);
             case SENSOR_TYPE:
                 return new SensorInput(mainActivity);

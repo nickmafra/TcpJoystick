@@ -1,0 +1,103 @@
+{
+  "id": "default_digital_joylayout",
+  "name": "Default Digital joystick",
+  "buttons": [
+    {
+      "type": "button",
+      "subtype": "POV",
+      "index": "1",
+      "direction": "d",
+      "position": {
+        "base": "left",
+        "x": 0.4,
+        "y": 0.2
+      },
+      "size": 0.25
+    },
+    {
+      "type": "POV",
+      "index": "1",
+      "direction": "l",
+      "position": {
+        "base": "left",
+        "x": 0.2,
+        "y": 0.4
+      },
+      "size": 0.25
+    },
+    {
+      "type": "POV",
+      "index": "1",
+      "direction": "u",
+      "position": {
+        "base": "left",
+        "x": 0.4,
+        "y": 0.6
+      },
+      "size": 0.25
+    },
+    {
+      "type": "POV",
+      "index": "1",
+      "direction": "r",
+      "position": {
+        "base": "left",
+        "x": 0.6,
+        "y": 0.4
+      },
+      "size": 0.25
+    },
+    {
+      "index": "5",
+      "format": "rectangle",
+      "text": "ST",
+      "position": {
+        "base": "center",
+        "x": 0,
+        "y": -0.2
+      },
+      "width": 0.3,
+      "height": 0.2
+    },
+    {
+      "index": "1",
+      "text": "B1",
+      "position": {
+        "base": "right",
+        "x": -0.4,
+        "y": 0.2
+      },
+      "size": 0.25
+    },
+    {
+      "index": "2",
+      "text": "B2",
+      "position": {
+        "base": "right",
+        "x": -0.2,
+        "y": 0.4
+      },
+      "size": 0.25
+    },
+    {
+      "index": "3",
+      "text": "B3",
+      "position": {
+        "base": "right",
+        "x": -0.4,
+        "y": 0.6
+      },
+      "size": 0.25
+    },
+    {
+      "index": "4",
+      "text": "B4",
+      "position": {
+        "base": "right",
+        "x": -0.6,
+        "y": 0.4
+      },
+      "size": 0.25
+    }
+  ]
+}

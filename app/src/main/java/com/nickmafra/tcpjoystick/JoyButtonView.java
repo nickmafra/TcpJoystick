@@ -79,7 +79,7 @@ public class JoyButtonView extends AppCompatTextView implements JoyItemView {
         setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
         setText(joyButton.getText());
         setButtonIndex(joyButton.getIndex());
-        JoyButtonTouchListener listener = new JoyButtonTouchListener(this);
+        JoyButtonTouchListener listener = new JoyButtonTouchListener(mainActivity);
         listener.setPressData(applyPattern(PRESS_PATTERN).getBytes());
         listener.setReleaseData(applyPattern(RELEASE_PATTERN).getBytes());
         setOnTouchListener(listener);

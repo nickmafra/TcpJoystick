@@ -14,10 +14,10 @@ public class JoyButtonTouchListener implements View.OnTouchListener {
     private byte[] pressData;
     private byte[] releaseData;
 
-    private final JoyButtonView joyButtonView;
+    private final MainActivity mainActivity;
 
-    public JoyButtonTouchListener(JoyButtonView joyButtonView) {
-        this.joyButtonView = joyButtonView;
+    public JoyButtonTouchListener(MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -36,7 +36,7 @@ public class JoyButtonTouchListener implements View.OnTouchListener {
                 break;
         }
         if (command != null) {
-            joyButtonView.getMainActivity().addCommand(command);
+            mainActivity.addCommand(command);
             return true;
         } else {
             return false;
