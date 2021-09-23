@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private SharedPreferences shared;
     private RelativeLayout layout;
     @Getter
     private LinearLayout menuLayout;
@@ -48,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
+        shared = PreferenceManager.getDefaultSharedPreferences(this);
+        SettingsActivity.updateNighMode(shared);
+
         layout = findViewById(R.id.main_layout);
 
         loadDefaultLayouts();
@@ -66,8 +70,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean loadLayout() {
-        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
-
         String layoutId = shared.getString("joystick_layout", "default");
         JoyLayout joyLayout = null;
         for (JoyLayout aLayout : defaultLayouts) {
@@ -93,8 +95,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean loadJoyIndex() {
-        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
-
         joyIndex = -1;
         try {
             joyIndex = Integer.parseInt(shared.getString("joystick_index", "-1"));
@@ -146,8 +146,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Invalid server settings.", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
 
         String ip = null;
         int port = -1;
