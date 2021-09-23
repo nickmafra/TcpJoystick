@@ -18,6 +18,7 @@ public class AxisInput implements Runnable {
     private static final int DEFAULT_DELAY = 100;
     private static final int DEFAULT_MAX_SEND_DELAY = 500;
     private static final float DEFAULT_DEAD_ZONE_PERCENT = 0.1F;
+    private static final float DEFAULT_MIN_DIFF_PERCENT = 0.1F;
 
     private static final String AXIS_PRE_PATTERN = "{\"${buttonIndex}\":{\"Direction\":\"${direction}\",\"Value\":";
     private static final String AXIS_POS_PATTERN = ",\"JNo\":${joyIndex}}}";
@@ -44,6 +45,8 @@ public class AxisInput implements Runnable {
 
     @Setter
     private volatile float deadZonePercent = DEFAULT_DEAD_ZONE_PERCENT;
+    @Setter
+    private volatile float minDiffPercent = DEFAULT_MIN_DIFF_PERCENT;
 
     private volatile double relX;
     private volatile double relY;
@@ -129,8 +132,9 @@ public class AxisInput implements Runnable {
             Log.d(TAG, "run: rels=" + relX + ", " + relY);
         }
         long time = System.currentTimeMillis();
-        long diff = time - lastSend;
-        if ((relX != lastRelX || relY != lastRelY || diff > maxSendDelay)) {
+        long diffTime = time - lastSend;
+        float diffSpace = (float) Math.hypot(relX - lastRelX, relY - lastRelY);
+        if ((diffSpace >= minDiffPercent || diffTime >= maxSendDelay)) {
             lastSend = time;
             lastRelX = relX;
             lastRelY = relY;
